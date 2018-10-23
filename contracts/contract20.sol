@@ -17,13 +17,6 @@ library SafeMath{
         uint256 c = a-b;
         return c;
     }
-
-    function safeMult(uint256 a, uint256 b) internal pure returns(uint256){
-        if(a==0) return 0;
-        uint256 c = a*b;
-        require (c/a == b,"Logical problem");
-        return c;
-    }
 }
 
 //------ Simplified main functions according to the ERC20 standard
@@ -66,7 +59,7 @@ contract Token is ERC20{
     function transfer(address toAddr, uint256 amount) public returns (bool success){
 
         //We prevent any posibility to transfer to 0x0 adress and to self being the amount over 0
-        require(toAddr!=0x0 && toAddr!=msg.sender && amount>0);
+        require(toAddr!=0x0 && toAddr!=msg.sender && amount>0, "Transfer address denied");
         balances[msg.sender] = balances[msg.sender].safeMinus(amount);
         balances[toAddr] = balances[toAddr].safeAdd(amount);
 
