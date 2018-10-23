@@ -56,4 +56,9 @@ contract Token is ERC20, SafeMath{
         creator = msg.sender;
         balances[msg.sender] = 10000;
     }
+
+    function balanceOf(address _owner) public view returns (uint256 balance){
+
+        
+    }
 }
