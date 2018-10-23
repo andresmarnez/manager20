@@ -31,7 +31,6 @@ contract ERC20{
 
     function balanceOf(address _owner)                                  public view returns (uint256 balance);
     function transfer(address toAddr, uint256 amount)                   public returns (bool success);
-    function approve(address _spender, uint256 _value)                  public returns (bool success);
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -42,7 +41,7 @@ contract Token is ERC20{
     
     //------ TOKEN SPECIFICATIONS
 
-    uint256 public constant initSupply;
+    uint256 public initSupply;
     string public name = "SlackToken";
     uint8 public decimals = 2;
     string public symbol = "STK";
