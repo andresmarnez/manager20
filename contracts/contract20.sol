@@ -4,7 +4,7 @@ pragma solidity ^0.4.25;
 
 //Based on OpenZeppeling MathSafe library for 
 //Check for overflow or underflow using require function to revert changes instead of assertion
-contract SafeMath{
+library SafeMath{
 
     function safeAdd(uint256 a, uint256 b) internal pure returns (uint256){
         uint256 c = a+b;
@@ -26,39 +26,53 @@ contract SafeMath{
     }
 }
 
-//Defining main functions according to the standard.
+//------ Simplified main functions according to the ERC20 standard
 contract ERC20{
 
-    function balanceOf(address _owner) public view returns (uint256 balance);
-    function transfer(address _to, uint256 _value) public returns (bool success);
-    function transferFrom(address _from, address _to, uint256 _value) public returns (bool success);
-    function approve(address _spender, uint256 _value) public returns (bool success);
+    function balanceOf(address _owner)                                  public view returns (uint256 balance);
+    function transfer(address toAddr, uint256 amount)                   public returns (bool success);
+    function approve(address _spender, uint256 _value)                  public returns (bool success);
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 }
 
-contract Token is ERC20, SafeMath{
+contract Token is ERC20{
+    using SafeMath for uint256;
+    
+    //------ TOKEN SPECIFICATIONS
 
-    //Public variables of the token
-    string public name;
-    uint8 public decimals;
-    string public symbol;
+    uint256 public constant initSupply;
+    string public name = "SlackToken";
+    uint8 public decimals = 2;
+    string public symbol = "STK";
     mapping (address => uint256) balances;
     address public creator;
 
     //Constructor of our token, it will be simple due to the porpuose of demostration
     function Token(){
 
-        name = "SlackToken";
-        decimals = 2;
-        symbol = "STK";
         creator = msg.sender;
-        balances[msg.sender] = 10000;
+        balances[msg.sender] = 100000;
+        initSupply = 100000;
     }
 
-    function balanceOf(address _owner) public view returns (uint256 balance){
-
+    //BlanceOf returns the amount of tokens saved for an address
+    function balanceOf(address addrs) public view returns (uint256 balance){
         
+        return balances[addrs];
+    }
+
+    //Transfer moves balances from the sender address to the designated one for the value desired 
+    function transfer(address toAddr, uint256 amount) public returns (bool success){
+
+        //We prevent any posibility to transfer to 0x0 adress and to self being the amount over 0
+        require(toAddr!=0x0 && toAddr!=msg.sender && amount>0);
+        balances[msg.sender] = balances[msg.sender].safeMinus(amount);
+        balances[toAddr] = balances[toAddr].safeAdd(amount);
+
+        //We broadcast the event
+        Transfer(msg.sender,toAddr,amount);
+        return true;
     }
 }
