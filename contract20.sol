@@ -34,14 +34,11 @@ contract ERC20{
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success);
     function approve(address _spender, uint256 _value) public returns (bool success);
 
-
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
-
-
 }
 
-contract Token is Token20, SafeMath{
+contract Token is ERC20, SafeMath{
 
     //Public variables of the token
     string public name;
@@ -50,7 +47,6 @@ contract Token is Token20, SafeMath{
     mapping (address => uint256) balances;
     address public creator;
 
-    
     //Constructor of our token, it will be simple due to the porpuose of demostration
     function Token(){
 
@@ -60,7 +56,4 @@ contract Token is Token20, SafeMath{
         creator = msg.sender;
         balances[msg.sender] = 10000;
     }
-   
-
-
 }
