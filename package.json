@@ -10,5 +10,5 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Andres Sánchez",
-  "license": "ISC"
+  "license": "MIT"
 }
