@@ -2,7 +2,7 @@ pragma solidity ^0.4.25;
 
 /// @title ERC20 token example by Andres Sanchez Martinez
 
-//Based on OpenZeppeling MathSafe library for 
+//Based on OpenZeppeling MathSafe library
 //Check for overflow or underflow using require function to revert changes instead of assertion
 library SafeMath{
 
