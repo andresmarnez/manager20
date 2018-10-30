@@ -13,10 +13,6 @@ Para instalar:
           - Esta funcion se encargará de leer los parametros de slack y asignar la direccion enviada al usuario de ejecuta el comando.
           - En la conexión a la base de datos modifica los parametros de ser necesario. En mi caso con la zona de lanzamiento fue suficiente.
       - sendpool:
-          - `db` set to the name of the database you made for the bot.
-          - `table` set to the name of the table you made for the bot.
-          - `user` set to the name of a MySQL user with access to the DB.
-          - `pass` set to the password of that MySQL user.
         
 - Configura las salidas API GETAWAY para ambas funciones:
     - `admins` control who can add/remove members.
@@ -29,5 +25,5 @@ Para instalar:
     - Busca Slash commands como integraciones al sitio de trabajo.
     - Crea 2 commandos:
         - add:
-            - Utiliza
-            - save the Token to verify origin.
+            - `url` utiliza la url de la API para la funcion add.
+            - `token` guarda este token y utilizalo en tu funcion para comprobar el origen del mensaje.
