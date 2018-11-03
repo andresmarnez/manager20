@@ -7,7 +7,7 @@ const AWS = require('aws-sdk');
 const baseETH = new AWS.DynamoDB.DocumentClient({region: 'eu-west-2'});
 
 //Token que nos permite saber de donde viene el mensaje, rechazar los de origen desconocidos
-const origin = 'NosNhzvI1UkFr4vB5cMKKVuI';
+const origin = SLACK_VERIFICATION_TOKEN;
 
 exports.handler = (event, context, callback) => {
     
@@ -27,7 +27,7 @@ exports.handler = (event, context, callback) => {
                     addr: text
                 },
         
-                TableName: 'slackdir'
+                TableName: TABLE_NAME
             };
             
              //Se envia la nueva entrada a nuestra base de datos de direcciones manejando posibles errores

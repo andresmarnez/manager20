@@ -9,15 +9,39 @@ Para instalar:
     
 - Crea las funciones Lambda:
     - Accede a Lambda en tu panel de AWS y añade las siguiente funciones:
-      - add: 
-          - Esta funcion se encargará de leer los parametros de slack y asignar la direccion enviada al usuario de ejecuta el comando.
-          - En la conexión a la base de datos modifica los parametros de ser necesario. En mi caso con la zona de lanzamiento fue suficiente.
-      - sendpool:
+        - add: 
+            - Esta funcion se encargará de leer los parametros de slack y asignar la direccion enviada al usuario que ejecuta el comando.
+            - En la conexión a la base de datos modifica los parametros de ser necesario. En mi caso con la zona de lanzamiento fue suficiente.
+        - sendpool:
+            - Verifica los parametros de entrada y recoge los datos asociados al usuario mencionado. Despues envia una petición GET al servidor con los parametros necesarios para enviar la transacción.
         
 - Configura las salidas API GETAWAY para ambas funciones:
-    - `admins` control who can add/remove members.
-    - `members` is anyone who can spend the money in the pool.
-    
+    - add:
+        - function: YOUR LAMBDA ADD FUNCTION
+        - method: GET
+        - integration request: 
+            -  mapping templates:
+                - content-type: application/json
+                - content: {   
+                   
+                    "token" : "$input.params('token')",
+                    "user_id" : "$input.params('user_id')",
+                    "user_name" : "$input.params('user_name')",
+                    "text" : "$input.params('text')"
+                }
+
+    - sendpool:
+        - function: YOUR LAMBDA SENDPOOL FUNCTION
+        - method: GET
+        - integration request: 
+            -  mapping templates:
+                - content-type: application/json
+                - content: {   
+                   
+                    "token" : "$input.params('token')",
+                    "text" : "$input.params('text')"
+                }
+
 - Crear comandos de Slack.
     - Ves a https://slack.com/intl/es-es/get-started
     - Registrate y crea un espacio de trabajo.

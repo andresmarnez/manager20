@@ -5,23 +5,31 @@
 //Utilizamos las librerias nativas de el AWS que nos dan acceso a la base de datos y uso de http.
 const AWS = require('aws-sdk');
 const baseETH = new AWS.DynamoDB.DocumentClient({region: 'eu-west-2'});
+const origin = SLACK_VERIFICATION_TOKEN;
 
 exports.handler = (event, context, callback) => {
-    
-    var ec2 = "35.178.250.121:3000/sendt?";
-    var addr;
-    var jsonarray;
-    var sid = '';
-    var amnt = '';
+
     //Recortamos espacios al principio y al final y seccionamos el texto donde deben haber solo 2 valores: 1Cantidad 2Usuario en formato <@U1234|user>
     var text = event.text;
     var args = text.trim().split(" ");
     
-    if(args.length == 2 && text.includes("|","@","<",">")){
+    if(args.length == 2 && text.includes("|","@","<",">") && event.token == origin){
         
         var user = args[1].split("|");
-        sid = user[0].slice(2, user[0].length);
-        amnt = args[0];
+        var sid = user[0].slice(2, user[0].length);
+        var amnt = args[0];
+
+
+        if(isNaN(parseFloat(amnt))){
+            
+            callback(null,{
+                "text":"Failure",
+                "attachments": [{
+                    "text":'You should add a valid amount.'
+                }]
+            });
+            return;
+        }
         
         let busca = {
             TableName: 'slackdir',
@@ -43,23 +51,23 @@ exports.handler = (event, context, callback) => {
                 callback(null,{
                     "text":"Failure",
                     "attachments": [{
-                        "text":'The user has not set a valid ETH address.'
+                        "text":'The user has not set an Ethereum address.'
                     }]
                 });
                 return;
             }
 
             //Obtenemos la informacion de la base de datos y operamos en ella para sacar la direccion de ethereum
-            jsonarray = JSON.stringify(data).split("\"");
-            addr = jsonarray[5];
+            var jsonarray = JSON.stringify(data).split("\"");
+            var addr = jsonarray[5];
             
             //Formamos la URL de peticion de nuestro EC2
-            ec2 = "/sendt?addr=" + addr +"&amount="+amnt;
+            var ec2 = "/sendpool?addr=" + addr +"&amount="+amnt;
             
             //Iniciamos la connexion http como servicio segun la libreria
             const svc = new AWS.Service({
  
-                endpoint: 'http://ec2-35-178-250-121.eu-west-2.compute.amazonaws.com:3000',
+                endpoint: YOUR_FUNCTION_ENDPOINT,
                 convertResponseTypes: false,
                 apiConfig: {
                     metadata: {
@@ -84,23 +92,24 @@ exports.handler = (event, context, callback) => {
                     callback(null,{
                         "text":"Failure",
                         "attachments": [{
-                        "text":'The command was not called correctly, make sure you specify the amount (number) followed by the @user. Example: /sendpool 150 @example.'
+                        "text":'There has been an error while creating the transaction. Contact the owner @marnez for more details. ERROR: 001'
                         }]
                     });
                 return;
                 }
                 
-                callback(null,data)
+                else{
+                    callback(null,data)
+                    return;
+                }
             });
-
-            return;
         });
     }
     
     else callback(null,{
         "text":"Failure",
         "attachments": [{
-            "text":'The command was not called correctly, make sure you specify the amount (number) followed by the @user. Example: /sendpool 150 @example.'
+            "text":'The command was not called correctly, make sure you specify the amount (XX.YY) followed by the @user. Example: /sendpool 150.00 @example.'
         }]
     });
     
